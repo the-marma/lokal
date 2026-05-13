@@ -1,0 +1,23 @@
+{
+  "manifest_version": 2,
+  "name": "Lokal",
+  "version": "1.1",
+  "description": "Auto-convert currency, temperature, dates, timezones and units to your locale on any page.",
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "storage",
+    "https://api.exchangerate-api.com/*"
+  ],
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_title": "Lokal"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

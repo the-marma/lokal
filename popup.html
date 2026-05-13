@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 320px;
+      background: #1a1a1f;
+      color: #e8e8ec;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 13px;
+      user-select: none;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid #2a2a32;
+      background: #14141a;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-icon {
+      width: 22px;
+      height: 22px;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .logo-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f0f0f4;
+      letter-spacing: -0.2px;
+    }
+
+    .power-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid #3a3a46;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s, background 0.15s;
+      position: relative;
+    }
+
+    .power-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: #888;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      transition: stroke 0.15s;
+    }
+
+    .power-btn.on {
+      border-color: #3b82f6;
+      background: rgba(59,130,246,0.12);
+    }
+
+    .power-btn.on svg { stroke: #3b82f6; }
+
+    .status-bar {
+      padding: 6px 14px;
+      background: #111116;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #666;
+      border-bottom: 1px solid #2a2a32;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #444;
+      transition: background 0.2s;
+    }
+
+    .status-dot.active { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.5); }
+    .status-dot.inactive { background: #ef4444; }
+
+    .section {
+      border-bottom: 1px solid #2a2a32;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      cursor: pointer;
+      background: #1a1a1f;
+    }
+
+    .section-header:hover { background: #1f1f26; }
+
+    .section-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #a0a0b0;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .section-icon {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .section-body {
+      padding: 0 14px 12px;
+      display: none;
+    }
+
+    .section-body.open { display: block; }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+    }
+
+    .toggle-label {
+      color: #c0c0cc;
+      font-size: 12px;
+    }
+
+    .toggle {
+      position: relative;
+      width: 34px;
+      height: 18px;
+    }
+
+    .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: #2e2e3a;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: #666;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.15s, background 0.15s;
+    }
+
+    .toggle input:checked + .toggle-track { background: rgba(59,130,246,0.3); }
+    .toggle input:checked + .toggle-track::after { transform: translateX(16px); background: #3b82f6; }
+
+    .field {
+      margin-top: 8px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .field select {
+      width: 100%;
+      background: #111116;
+      border: 1px solid #2e2e3a;
+      color: #d0d0da;
+      padding: 6px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+
+    .field select:focus { border-color: #3b82f6; }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .apply-btn {
+      width: calc(100% - 28px);
+      margin: 10px 14px;
+      padding: 9px;
+      background: #3b82f6;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .apply-btn:hover { background: #2563eb; }
+    .apply-btn:active { transform: scale(0.98); }
+
+    .footer {
+      padding: 6px 14px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #444;
+    }
+
+    .rate-info { font-size: 10px; color: #444; }
+
+    .chevron {
+      transition: transform 0.2s;
+      font-size: 10px;
+      color: #555;
+    }
+    .chevron.open { transform: rotate(180deg); }
+
+    body.disabled .section-body,
+    body.disabled .apply-btn { opacity: 0.4; pointer-events: none; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">🌐</div>
+      <span class="logo-name">LocaleShift</span>
+    </div>
+    <button class="power-btn" id="powerBtn" title="Enable / Disable">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2v6M4.93 4.93A10 10 0 1 0 19.07 4.93"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">Loading…</span>
+  </div>
+
+  <div class="section">
+    <div class="section-header" data-target="currency-body">
+      <div class="section-left">
+        <span class="section-icon">💱</span> Currency
+      </div>
+      <span class="chevron" id="chevron-currency">▼</span>
+    </div>
+    <div class="section-body open" id="currency-body">
+      <div class="toggle-row">
+        <span class="toggle-label">Enable conversion</span>
+        <label class="toggle"><input type="checkbox" id="currencyEnabled" checked><span class="toggle-track"></span></label>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>From</label>
+          <select id="currencyFrom">
+            <option value="USD">USD $</option>
+            <option value="EUR">EUR €</option>
+            <option value="GBP">GBP £</option>
+            <option value="JPY">JPY ¥</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>To</label>
+          <select id="currencyTo">
+            <option value="INR">INR ₹</option>
+            <option value="USD">USD $</option>
+            <option value="EUR">EUR €</option>
+            <option value="GBP">GBP £</option>
+            <option value="JPY">JPY ¥</option>
+            <option value="AUD">AUD A$</option>
+            <option value="CAD">CAD C$</option>
+            <option value="SGD">SGD S$</option>
+            <option value="CHF">CHF Fr</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" data-target="tz-body">
+      <div class="section-left">
+        <span class="section-icon">🕐</span> Timezone
+      </div>
+      <span class="chevron" id="chevron-tz-body">▼</span>
+    </div>
+    <div class="section-body open" id="tz-body">
+      <div class="field">
+        <label>Convert to</label>
+        <select id="timezone">
+          <option value="Asia/Kolkata" data-label="IST">India — IST (UTC+5:30)</option>
+          <option value="America/New_York" data-label="ET">New York — ET</option>
+          <option value="America/Los_Angeles" data-label="PT">Los Angeles — PT</option>
+          <option value="America/Chicago" data-label="CT">Chicago — CT</option>
+          <option value="Europe/London" data-label="GMT">London — GMT/BST</option>
+          <option value="Europe/Paris" data-label="CET">Paris — CET</option>
+          <option value="Asia/Dubai" data-label="GST">Dubai — GST (UTC+4)</option>
+          <option value="Asia/Singapore" data-label="SGT">Singapore — SGT</option>
+          <option value="Asia/Tokyo" data-label="JST">Tokyo — JST</option>
+          <option value="Australia/Sydney" data-label="AEST">Sydney — AEST</option>
+          <option value="UTC" data-label="UTC">UTC</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" data-target="date-body">
+      <div class="section-left">
+        <span class="section-icon">📅</span> Date format
+      </div>
+      <span class="chevron" id="chevron-date-body">▼</span>
+    </div>
+    <div class="section-body" id="date-body">
+      <div class="field">
+        <label>Format</label>
+        <select id="dateFormat">
+          <option value="DD/MM/YYYY">DD/MM/YYYY — Indian / European</option>
+          <option value="DD-MM-YYYY">DD-MM-YYYY</option>
+          <option value="YYYY-MM-DD">YYYY-MM-DD — ISO 8601</option>
+          <option value="MM/DD/YYYY">MM/DD/YYYY — US</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" data-target="units-body">
+      <div class="section-left">
+        <span class="section-icon">📏</span> Units &amp; Temperature
+      </div>
+      <span class="chevron" id="chevron-units-body">▼</span>
+    </div>
+    <div class="section-body" id="units-body">
+      <div class="toggle-row">
+        <span class="toggle-label">Convert units (miles, lbs, gallons…)</span>
+        <label class="toggle"><input type="checkbox" id="convertUnits" checked><span class="toggle-track"></span></label>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-label">Convert temperature (°F → °C)</span>
+        <label class="toggle"><input type="checkbox" id="convertTemp" checked><span class="toggle-track"></span></label>
+      </div>
+    </div>
+  </div>
+
+  <button class="apply-btn" id="applyBtn">Apply to this page</button>
+
+  <div class="footer">
+    <span class="rate-info" id="rateInfo">—</span>
+    <span>LocaleShift v1.1</span>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
